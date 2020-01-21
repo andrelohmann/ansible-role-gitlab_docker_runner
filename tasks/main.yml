@@ -42,6 +42,6 @@
     --run-untagged=true \
     --docker-image='{{ gitlab_runner_image |default('alpine') }}' \
     --request-concurrency {{ gitlab_runner_concurrent }}
-    --docker-volumes='/certs/client,/cache'
-
+    --docker-volumes='/certs/client'
+    --docker-volumes='/cache'
 ...

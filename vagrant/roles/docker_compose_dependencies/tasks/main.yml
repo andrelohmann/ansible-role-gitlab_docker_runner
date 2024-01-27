@@ -1,0 +1,69 @@
+---
+
+- name: Docker | Install packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: latest
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: true
+    autoremove: true
+    update_cache: true
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - python3-docker
+
+- name: Docker | Create docker directory
+  ansible.builtin.file:
+    path: /opt/docker
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+- name: Docker | Copy the docker compose file
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "/opt/docker/docker-compose.yml"
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: Docker | Create and start services
+  community.docker.docker_compose_v2:
+    project_src: /opt/docker
+    state: present
+  register: output
+
+- name: Docker | Dump output
+  ansible.builtin.debug:
+    var: output
+
+- name: Probe gitlab api for availability
+  ansible.builtin.uri:
+    url: http://gitlab.runner.lokal/api/v4/broadcast_messages
+    method: GET
+    status_code: 200
+  register: result
+  retries: 100
+  delay: 15
+  until: result.status == 200
+
+- name: Docker | Dump result
+  ansible.builtin.debug:
+    var: result
+
+- name: Create the gitlab api token
+  community.docker.docker_container_exec:
+    container: "{{ output.containers[0].Name }}"
+    argv:
+    - /bin/bash
+    - -c
+    - "gitlab-rails runner \"token = User.find_by_username('root').personal_access_tokens.create(scopes: ['api'], name: 'API Automation token', expires_at: 365.days.from_now); token.set_token('{{ gitlab_api_access_token }}'); token.save!\""
+    chdir: /root
+  register: _docker_exec
+  failed_when:
+  - _docker_exec.rc == 1
+  - _docker_exec.stderr is not search("duplicate key value violates unique constraint")
+
+...

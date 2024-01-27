@@ -1,0 +1,17 @@
+---
+- name: Converge
+  hosts: all
+
+  vars:
+    gitlab_external_url: http://localhost
+    gitlab_runner_docker_name: "docker-runner.examlpe.com"
+    gitlab_runner_docker_token: mocked-token-12345
+    gitlab_runner_shell_name: "shell-runner.examlpe.com"
+    gitlab_runner_shell_token: mocked-token-12345
+
+  tasks:
+  - name: "Include andrelohmann.gitlab_docker_runner"
+    include_role:
+      name: "andrelohmann.gitlab_docker_runner"
+
+...

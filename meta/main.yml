@@ -3,17 +3,17 @@ galaxy_info:
   role_name: gitlab_docker_runner
   author: andrelohmann
   description: ansible galaxy role to install and register a gitlab runner with docker executor
-  company: smartformer UG
+  company: CloudCourse GmbH
 
   license: MIT
 
-  min_ansible_version: 2.7
+  min_ansible_version: "2.11"
 
   platforms:
-    - name: Ubuntu
-      versions:
-      - xenial
-      - bionic
+  - name: Ubuntu
+    versions:
+    - jammy
+    - focal
 
   galaxy_tags:
   - gitlab
@@ -21,5 +21,6 @@ galaxy_info:
   - docker
 
 dependencies:
-- andrelohmann.docker
+- { role: andrelohmann.docker }
+
 ...

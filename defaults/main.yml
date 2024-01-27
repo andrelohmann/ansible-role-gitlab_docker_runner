@@ -1,9 +1,15 @@
 ---
-gitlab_runner_concurrent: 4 # concurrent jobs
-# gitlab_runner_description: "runner.examlpe.com" # gitlab runner name/domain
-# gitlab_runner_token: __REGISTRATION_TOKEN__
+
 # gitlab_external_url: __GITLAB_URL__
-gitlab_runner_tags:
-- docker
-gitlab_runner_image: docker:latest
+
+gitlab_runner_concurrent: 4  # concurrent jobs
+
+# gitlab_runner_docker_name: "runner.examlpe.com" # gitlab runner name/domain
+# gitlab_runner_docker_token: __REGISTRATION_TOKEN__
+gitlab_runner_docker_privileged: false
+gitlab_runner_docker_image: docker:latest
+
+# gitlab_runner_shell_name: "runner.examlpe.com" # gitlab runner name/domain
+# gitlab_runner_shell_token: __REGISTRATION_TOKEN__
+
 ...

@@ -1,0 +1,34 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+
+  - name: Check the existence of /etc/gitlab-runner/gitlab-docker-runner
+    ansible.builtin.stat:
+      path: /etc/gitlab-runner/gitlab-docker-runner
+    register: stat_docker_runner
+
+  - name: Check the existence of /etc/gitlab-runner/gitlab-shell-runner
+    ansible.builtin.stat:
+      path: /etc/gitlab-runner/gitlab-shell-runner
+    register: stat_shell_runner
+
+  - name: Register shell runner
+    ansible.builtin.shell: >-
+      cat /etc/gitlab-runner/config.toml
+    args:
+      executable: /bin/bash
+    register: config_toml
+
+  - name: Validate the creation of the runners
+    ansible.builtin.assert:
+      that:
+      - stat_docker_runner.stat.exists
+      - stat_shell_runner.stat.exists
+      - config_toml.stdout is search('name = "docker-runner.examlpe.com"')
+      - config_toml.stdout is search('name = "shell-runner.examlpe.com"')
+
+...

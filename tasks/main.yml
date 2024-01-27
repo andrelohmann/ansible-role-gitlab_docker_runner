@@ -1,0 +1,75 @@
+---
+
+- name: APT | Add gitlab-ee key
+  ansible.builtin.get_url:
+    url: https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey
+    dest: /etc/apt/trusted.gpg.d/gitlab-ee.asc
+    mode: '0644'
+    force: true
+
+- name: APT | Add gitlab-runner repo
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    filename: gitlab-ee
+    state: present
+    update_cache: true
+
+- name: APT | Add gitlab-runner src-repo
+  ansible.builtin.apt_repository:
+    repo: "deb-src https://packages.gitlab.com/runner/gitlab-runner/{{ ansible_distribution | lower }}/ {{ ansible_distribution_release | lower }} main"
+    filename: gitlab-ee
+    state: present
+    update_cache: true
+
+- name: APT | Install gitlab-runner
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    dpkg_options: 'force-confnew,force-confdef'
+    autoclean: true
+    autoremove: true
+    update_cache: true
+    cache_valid_time: 3600
+  vars:
+    packages:
+    - gitlab-runner
+
+- name: Runner | Register docker runner
+  ansible.builtin.shell: >-
+    gitlab-runner register \
+    --non-interactive \
+    --url "{{ gitlab_external_url }}" \
+    --token "{{ gitlab_runner_docker_token }}" \
+    --name "{{ gitlab_runner_docker_name }}" \
+    --executor "docker" \
+    --docker-tlsverify=false \
+    --docker-privileged={% if gitlab_runner_docker_privileged %}true{% else %}false{% endif %} \
+    --docker-image "{{ gitlab_runner_docker_image | default('alpine') }}" && \
+    touch /etc/gitlab-runner/gitlab-docker-runner
+  args:
+    executable: /bin/bash
+    creates: /etc/gitlab-runner/gitlab-docker-runner
+  when: gitlab_runner_docker_name is defined and gitlab_runner_docker_token is defined
+
+- name: Runner | Add gitlab-runner to docker group
+  ansible.builtin.user:
+    name: gitlab-runner
+    groups: docker
+    append: true
+  when: gitlab_runner_docker_name is defined and gitlab_runner_docker_token is defined
+
+- name: Register shell runner
+  ansible.builtin.shell: >-
+    gitlab-runner register \
+    --non-interactive \
+    --url "{{ gitlab_external_url }}" \
+    --token "{{ gitlab_runner_shell_token }}" \
+    --name "{{ gitlab_runner_shell_name }}" \
+    --executor "shell" && \
+    touch /etc/gitlab-runner/gitlab-shell-runner
+  args:
+    executable: /bin/bash
+    creates: /etc/gitlab-runner/gitlab-shell-runner
+  when: gitlab_runner_shell_name is defined and gitlab_runner_shell_token is defined
+
+...

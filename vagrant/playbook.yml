@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+
+  vars:
+    docker_users:
+    - vagrant
+    gitlab_external_url: http://gitlab.runner.lokal
+    gitlab_runner_docker_name: "runner.lokal"
+    gitlab_api_access_token: glpat-a6RGcfFJeS9-CRpLMs8o
+
+  pre_tasks:
+  - name: Check for file custom_vars.yml
+    ansible.builtin.stat:
+      path: custom_vars.yml
+    register: stat_custom_vars
+  - name: Load custom vars, if existent
+    ansible.builtin.include_vars:
+      file: custom_vars.yml
+    when: stat_custom_vars.stat.exists
+  - name: Add test Domain to etc hosts
+    ansible.builtin.lineinfile:
+      dest: /etc/hosts
+      regexp: '^127.0.0.1'
+      line: '127.0.0.1 localhost runner.lokal gitlab.runner.lokal'
+      state: present
+
+  roles:
+  - andrelohmann.root_colored_prompt
+  - andrelohmann.docker
+  - docker_compose_dependencies
+  - runner_tokens
+  - ansible-role-gitlab_docker_runner
+
+...

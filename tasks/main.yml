@@ -44,6 +44,7 @@
     --executor "docker" \
     --docker-tlsverify=false \
     --docker-privileged={% if gitlab_runner_docker_privileged %}true{% else %}false{% endif %} \
+    {% if gitlab_runner_docker_network_mode %}--docker-network-mode "{{ gitlab_runner_docker_network_mode }}"{% endif %} \
     --docker-image "{{ gitlab_runner_docker_image | default('alpine') }}" && \
     touch /etc/gitlab-runner/gitlab-docker-runner
   args:

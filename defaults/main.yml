@@ -7,6 +7,12 @@ gitlab_runner_concurrent: 4  # concurrent jobs
 # gitlab_runner_docker_name: "runner.examlpe.com" # gitlab runner name/domain
 # gitlab_runner_docker_token: __REGISTRATION_TOKEN__
 gitlab_runner_docker_privileged: false
+
+# The network_mode will be set to host by default
+# Set it accordingly to your requirements
+# Set it to false, if network_mode should not be activated
+gitlab_runner_docker_network_mode: host
+
 gitlab_runner_docker_image: docker:latest
 
 # gitlab_runner_shell_name: "runner.examlpe.com" # gitlab runner name/domain

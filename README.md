@@ -19,6 +19,10 @@ The default set of variables defines the gitlab runner installation and needs at
     gitlab_runner_concurrent: 4  # concurrent jobs
     gitlab_runner_docker_privileged: false
     gitlab_runner_docker_image: docker:latest
+    # The network_mode will be set to host by default
+    # Set it accordingly to your requirements
+    # Set it to false, if network_mode should not be activated
+    gitlab_runner_docker_network_mode: host
 
     # For the installation of a docker runner
     gitlab_runner_docker_name: "runner.examlpe.com" # gitlab runner name/domain

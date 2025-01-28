@@ -1,10 +1,10 @@
 ---
 
 roles:
-- andrelohmann.root_colored_prompt
-- andrelohmann.docker
+- name: andrelohmann.root_colored_prompt
+- name: andrelohmann.docker
 
 collections:
-- community.docker
+- name: community.docker
 
 ...

@@ -1,7 +1,8 @@
 ---
-- hosts: all
+- name: Install
+  hosts: all
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
 
   vars:
     docker_users:
@@ -27,10 +28,10 @@
       state: present
 
   roles:
-  - andrelohmann.root_colored_prompt
-  - andrelohmann.docker
-  - docker_compose_dependencies
-  - runner_tokens
-  - ansible-role-gitlab_docker_runner
+  - name: andrelohmann.root_colored_prompt
+  - name: andrelohmann.docker
+  - name: docker_compose_dependencies
+  - name: runner_tokens
+  - name: ansible-role-gitlab_docker_runner
 
 ...

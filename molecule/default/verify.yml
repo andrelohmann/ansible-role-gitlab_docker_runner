@@ -22,6 +22,7 @@
     args:
       executable: /bin/bash
     register: config_toml
+    changed_when: false
 
   - name: Validate the creation of the runners
     ansible.builtin.assert:

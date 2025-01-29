@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
 
   vars:
     gitlab_external_url: http://localhost
@@ -12,8 +12,8 @@
     gitlab_runner_shell_token: mocked-token-12345
 
   tasks:
-  - name: "Include andrelohmann.gitlab_docker_runner"
-    include_role:
+  - name: Include andrelohmann.gitlab_docker_runner
+    ansible.builtin.include_role:
       name: "andrelohmann.gitlab_docker_runner"
 
 ...
